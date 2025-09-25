@@ -1,0 +1,61 @@
+﻿// Copyright (C) RenZhai.2025.All Rights Reserved.
+
+#include "SimpleVRFeatureKitEditorStyle.h"
+#include "SimpleVRFeatureKitEditor.h"
+#include "Framework/Application/SlateApplication.h"
+#include "Styling/SlateStyleRegistry.h"
+#include "Slate/SlateGameResources.h"
+#include "Interfaces/IPluginManager.h"
+#include "Styling/SlateStyleMacros.h"
+
+#define RootToContentDir Style->RootToContentDir
+
+TSharedPtr<FSlateStyleSet> FSimpleVRFeatureKitEditorStyle::StyleInstance = nullptr;
+
+void FSimpleVRFeatureKitEditorStyle::Initialize()
+{
+	if (!StyleInstance.IsValid())
+	{
+		StyleInstance = Create();
+		FSlateStyleRegistry::RegisterSlateStyle(*StyleInstance);
+	}
+}
+
+void FSimpleVRFeatureKitEditorStyle::Shutdown()
+{
+	FSlateStyleRegistry::UnRegisterSlateStyle(*StyleInstance);
+	ensure(StyleInstance.IsUnique());
+	StyleInstance.Reset();
+}
+
+FName FSimpleVRFeatureKitEditorStyle::GetStyleSetName()
+{
+	static FName StyleSetName(TEXT("SimpleVRFeatureKitEditorStyle"));
+	return StyleSetName;
+}
+
+
+const FVector2D Icon16x16(16.0f, 16.0f);
+const FVector2D Icon20x20(20.0f, 20.0f);
+
+TSharedRef< FSlateStyleSet > FSimpleVRFeatureKitEditorStyle::Create()
+{
+	TSharedRef< FSlateStyleSet > Style = MakeShareable(new FSlateStyleSet("SimpleVRFeatureKitEditorStyle"));
+	Style->SetContentRoot(IPluginManager::Get().FindPlugin("SimpleVRFeatureKit")->GetBaseDir() / TEXT("Resources"));
+
+	Style->Set("SimpleVRFeatureKitEditor.PluginAction", new IMAGE_BRUSH_SVG(TEXT("PlaceholderButtonIcon"), Icon20x20));
+	return Style;
+}
+
+void FSimpleVRFeatureKitEditorStyle::ReloadTextures()
+{
+	if (FSlateApplication::IsInitialized())
+	{
+		FSlateApplication::Get().GetRenderer()->ReloadTextureResources();
+	}
+}
+
+const ISlateStyle& FSimpleVRFeatureKitEditorStyle::Get()
+{
+	return *StyleInstance;
+}
